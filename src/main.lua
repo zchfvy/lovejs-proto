@@ -1,5 +1,8 @@
 
 function love.load()
+    screen_x = 500
+    screen_y = 500
+
     p_x = 100
     p_y = 50
     v_x = 0
@@ -8,6 +11,8 @@ function love.load()
 
     accel = 100
     rot_spd = 4
+
+    love.window.setMode(screen_x, screen_y, {})
 end
 
 function love.update(dt)
@@ -27,6 +32,18 @@ function love.update(dt)
         rot = rot + rot_spd * dt
     end
 
+    if p_x > screen_x then
+        p_x = p_x - screen_x
+    end
+    if p_x < 0 then
+        p_x = p_x + screen_x
+    end
+    if p_y > screen_y then
+        p_y = p_y - screen_y
+    end
+    if p_y < 0 then
+        p_y = p_y + screen_y
+    end
 end
 
 function love.draw()
