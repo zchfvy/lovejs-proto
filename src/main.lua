@@ -25,8 +25,17 @@ function love.update(dt)
     update_input(dt)
     update_object_movement(player, dt)
 
+    dead_bullets = {}
     for id, bullet in pairs(bullets) do
         update_object_movement(bullet, dt)
+        bullet.life = bullet.life - dt
+        if bullet.life < 0 then
+            table.insert(dead_bullets, id)
+        end
+    end
+
+    for _, dead in pairs(dead_bullets) do
+        table.remove(bullets, dead)
     end
 end
 
@@ -49,7 +58,8 @@ function update_input(dt)
         table.insert(bullets, 
             {x = player.x, y = player.y,
              vx = player.vx + bul_spd*comp_x,
-             vy = player.vy + bul_spd*comp_y}
+             vy = player.vy + bul_spd*comp_y,
+             life = 5}
             )
     end
     if not love.keyboard.isDown('space') then
