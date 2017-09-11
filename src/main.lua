@@ -3,11 +3,13 @@ function love.load()
     screen_x = 500
     screen_y = 500
 
-    p_x = 100
-    p_y = 50
-    v_x = 0
-    v_y = 0
-    rot = 0
+    player = {
+        x = 100,
+        y = 50,
+        vx = 0,
+        vy = 0,
+        rot = 0
+    }
 
     accel = 100
     rot_spd = 4
@@ -20,59 +22,65 @@ function love.load()
 end
 
 function love.update(dt)
-    p_x = p_x + v_x * dt
-    p_y = p_y + v_y * dt
-    comp_x = math.sin(rot)
-    comp_y = -math.cos(rot)
+    update_input(dt)
+    update_object_movement(player, dt)
+
+    for id, bullet in pairs(bullets) do
+        update_object_movement(bullet, dt)
+    end
+end
+
+function update_input(dt)
+    comp_x = math.sin(player.rot)
+    comp_y = -math.cos(player.rot)
 
     if love.keyboard.isDown('w') then
-        v_y = v_y + accel * dt * comp_y
-        v_x = v_x + accel * dt * comp_x
+        player.vy = player.vy + accel * dt * comp_y
+        player.vx = player.vx + accel * dt * comp_x
     end
     if love.keyboard.isDown('a') then
-        rot = rot - rot_spd * dt
+        player.rot = player.rot - rot_spd * dt
     end
     if love.keyboard.isDown('d') then
-        rot = rot + rot_spd * dt
+        player.rot = player.rot + rot_spd * dt
     end
     if love.keyboard.isDown('space') and shooting == 0 then
         shooting = 1
         table.insert(bullets, 
-            {x = p_x, y = p_y,
-             vx = v_x + bul_spd*comp_x,
-             vy = v_y + bul_spd*comp_y}
+            {x = player.x, y = player.y,
+             vx = player.vx + bul_spd*comp_x,
+             vy = player.vy + bul_spd*comp_y}
             )
     end
     if not love.keyboard.isDown('space') then
         shooting = 0
     end
+end
 
-    if p_x > screen_x then
-        p_x = p_x - screen_x
-    end
-    if p_x < 0 then
-        p_x = p_x + screen_x
-    end
-    if p_y > screen_y then
-        p_y = p_y - screen_y
-    end
-    if p_y < 0 then
-        p_y = p_y + screen_y
-    end
+function update_object_movement(obj, dt)
+    obj.x = obj.x + obj.vx * dt
+    obj.y = obj.y + obj.vy * dt
 
-    for id, bullet in pairs(bullets) do
-        bullet.x = bullet.x + bullet.vx * dt
-        bullet.y = bullet.y + bullet.vy * dt
+    if obj.x > screen_x then
+        obj.x = obj.x - screen_x
+    end
+    if obj.x < 0 then
+        obj.x = obj.x + screen_x
+    end
+    if obj.y > screen_y then
+        obj.y = obj.y - screen_y
+    end
+    if obj.y < 0 then
+        obj.y = obj.y + screen_y
     end
 end
 
 function love.draw()
-    draw_ship(p_x, p_y, rot)
+    draw_ship(player.x, player.y, player.rot)
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
     end
 end
-
 
 function draw_ship(x, y, r)
     love.graphics.push()
