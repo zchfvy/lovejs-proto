@@ -18,6 +18,10 @@ function love.load()
     shooting = 0
     bul_spd = 150
 
+    asteroids = {}
+    asteroid_time = 1
+    asteroid_timer = 0
+
     love.window.setMode(screen_x, screen_y, {})
 end
 
@@ -36,6 +40,23 @@ function love.update(dt)
 
     for _, dead in pairs(dead_bullets) do
         table.remove(bullets, dead)
+    end
+
+    for _, ast in pairs(asteroids) do
+        update_object_movement(ast, dt)
+        ast.rot = ast.rot + ast.rot_vel
+    end
+
+    asteroid_timer = asteroid_timer - dt
+    if asteroid_timer < 0 then
+        asteroid_timer = asteroid_time
+        table.insert(asteroids,
+            {x = screen_x * math.random(),
+             y = screen_y * math.random(),
+             vx = 25 - 50 * math.random(),
+             vy = 25 - 50 * math.random(),
+             rot = math.random() * 6.28,
+             rot_vel = (0.5 - math.random()) * 0.02})
     end
 end
 
@@ -90,6 +111,9 @@ function love.draw()
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
     end
+    for id, ast in pairs(asteroids) do
+        draw_asteroid(ast.x, ast.y, ast.rot, id)
+    end
 end
 
 function draw_ship(x, y, r)
@@ -102,6 +126,31 @@ function draw_ship(x, y, r)
         -10,  15,
          10,  15,
           0,   -15)
+
+    love.graphics.pop()
+end
+
+function draw_asteroid(x, y, r, seed)
+    love.graphics.push()
+    love.graphics.translate(x,y)
+    love.graphics.rotate(r)
+
+    val = seed
+    points = {}
+    for i = 0,6 do
+        val = (val * 8121 + 28411) % 134456
+        table.insert(points, 18*val/134436 + 10)
+    end
+
+    love.graphics.line(
+         0.00            ,  1.0 * points[1],
+         0.87 * points[2],  0.5 * points[2],
+         0.87 * points[3], -0.5 * points[3],
+         0               , -1.0 * points[4],
+        -0.87 * points[5], -0.5 * points[5],
+        -0.87 * points[6],  0.5 * points[6],
+         0.00            ,  1.0 * points[1]
+        )
 
     love.graphics.pop()
 end
