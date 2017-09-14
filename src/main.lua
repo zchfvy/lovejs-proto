@@ -42,9 +42,21 @@ function love.update(dt)
         table.remove(bullets, dead)
     end
 
-    for _, ast in pairs(asteroids) do
+    exploded_asteroids = {}
+    for id, ast in pairs(asteroids) do
         update_object_movement(ast, dt)
         ast.rot = ast.rot + ast.rot_vel
+
+        for _, bullet in pairs(bullets) do
+            dist_2 = math.pow(bullet.x - ast.x, 2) + math.pow(bullet.y - ast.y, 2)
+            if dist_2 < 300 then
+                table.insert(exploded_asteroids, id)
+            end
+        end
+    end
+
+    for _, explo in pairs(exploded_asteroids) do
+        table.remove(asteroids, explo)
     end
 
     asteroid_timer = asteroid_timer - dt
@@ -55,9 +67,11 @@ function love.update(dt)
              y = screen_y * math.random(),
              vx = 25 - 50 * math.random(),
              vy = 25 - 50 * math.random(),
+             seed = math.random(),
              rot = math.random() * 6.28,
              rot_vel = (0.5 - math.random()) * 0.02})
     end
+    
 end
 
 function update_input(dt)
@@ -112,7 +126,7 @@ function love.draw()
         love.graphics.points(bullet.x, bullet.y)
     end
     for id, ast in pairs(asteroids) do
-        draw_asteroid(ast.x, ast.y, ast.rot, id)
+        draw_asteroid(ast.x, ast.y, ast.rot, ast.seed)
     end
 end
 
