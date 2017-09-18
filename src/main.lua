@@ -38,25 +38,26 @@ function love.update(dt)
         end
     end
 
-    for _, dead in pairs(dead_bullets) do
-        table.remove(bullets, dead)
-    end
-
     exploded_asteroids = {}
     for id, ast in pairs(asteroids) do
         update_object_movement(ast, dt)
         ast.rot = ast.rot + ast.rot_vel
 
-        for _, bullet in pairs(bullets) do
+        for bul_id, bullet in pairs(bullets) do
             dist_2 = math.pow(bullet.x - ast.x, 2) + math.pow(bullet.y - ast.y, 2)
             if dist_2 < 300 then
                 table.insert(exploded_asteroids, id)
+                table.insert(dead_bullets, bul_id)
             end
         end
     end
 
     for _, explo in pairs(exploded_asteroids) do
         table.remove(asteroids, explo)
+    end
+
+    for _, dead in pairs(dead_bullets) do
+        table.remove(bullets, dead)
     end
 
     asteroid_timer = asteroid_timer - dt
