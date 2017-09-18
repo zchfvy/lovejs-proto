@@ -3,6 +3,20 @@ function love.load()
     screen_x = 500
     screen_y = 500
 
+    love.window.setMode(screen_x, screen_y, {})
+
+    init_gameplay()
+end
+
+function love.update(dt)
+    update_gameplay(dt)
+end
+
+function love.draw()
+    draw_gameplay()
+end
+
+function init_gameplay()
     player = {
         x = 100,
         y = 50,
@@ -21,11 +35,9 @@ function love.load()
     asteroids = {}
     asteroid_time = 4
     asteroid_timer = 0
-
-    love.window.setMode(screen_x, screen_y, {})
 end
 
-function love.update(dt)
+function update_gameplay(dt)
     update_input(dt)
     update_object_movement(player, dt)
 
@@ -86,7 +98,6 @@ function love.update(dt)
              size = math.random() * 20 + 20,
              rot_vel = (0.5 - math.random()) * 0.02})
     end
-    
 end
 
 function update_input(dt)
@@ -135,7 +146,7 @@ function update_object_movement(obj, dt)
     end
 end
 
-function love.draw()
+function draw_gameplay()
     draw_ship(player.x, player.y, player.rot)
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
