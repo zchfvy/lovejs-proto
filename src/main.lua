@@ -131,7 +131,9 @@ function update_gameplay(dt)
                      rot_vel = (0.5 - math.random()) * 0.02})
             end
         end
-        score = score + ast.size * 100
+        if ast then
+            score = score + ast.size * 100
+        end
         table.remove(asteroids, explo)
     end
 
