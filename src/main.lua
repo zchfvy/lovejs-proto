@@ -45,7 +45,7 @@ function love.update(dt)
 
         for bul_id, bullet in pairs(bullets) do
             dist_2 = math.pow(bullet.x - ast.x, 2) + math.pow(bullet.y - ast.y, 2)
-            if dist_2 < 300 then
+            if dist_2 < math.pow(ast.size, 2) then
                 table.insert(exploded_asteroids, id)
                 table.insert(dead_bullets, bul_id)
             end
@@ -70,6 +70,7 @@ function love.update(dt)
              vy = 25 - 50 * math.random(),
              seed = math.random(),
              rot = math.random() * 6.28,
+             size = math.random() * 20 + 20,
              rot_vel = (0.5 - math.random()) * 0.02})
     end
     
@@ -127,7 +128,7 @@ function love.draw()
         love.graphics.points(bullet.x, bullet.y)
     end
     for id, ast in pairs(asteroids) do
-        draw_asteroid(ast.x, ast.y, ast.rot, ast.seed)
+        draw_asteroid(ast.x, ast.y, ast.rot, ast.size, ast.seed)
     end
 end
 
@@ -145,7 +146,7 @@ function draw_ship(x, y, r)
     love.graphics.pop()
 end
 
-function draw_asteroid(x, y, r, seed)
+function draw_asteroid(x, y, r, size, seed)
     love.graphics.push()
     love.graphics.translate(x,y)
     love.graphics.rotate(r)
@@ -154,7 +155,7 @@ function draw_asteroid(x, y, r, seed)
     points = {}
     for i = 0,6 do
         val = (val * 8121 + 28411) % 134456
-        table.insert(points, 18*val/134436 + 10)
+        table.insert(points, size*(.6*val/134436 + .3))
     end
 
     love.graphics.line(
