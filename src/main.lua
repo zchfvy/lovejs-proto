@@ -7,6 +7,8 @@ function love.load()
 
     gamestate = 'MENU'
 
+    space_down = 0
+
     init_gameplay()
 end
 
@@ -29,9 +31,13 @@ function love.draw()
 end
 
 function update_menu()
-    if love.keyboard.isDown('space') then
+    if love.keyboard.isDown('space') and space_down == 0 then
+        space_down = 1
         init_gameplay()
         gamestate = 'GAMEPLAY'
+    end
+    if not love.keyboard.isDown('space') then
+        space_down = 0
     end
 end
 
@@ -54,18 +60,30 @@ function init_gameplay()
     rot_spd = 4
 
     bullets = {}
-    shooting = 0
     bul_spd = 150
 
     asteroids = {}
     asteroid_time = 4
     asteroid_timer = 0
+
+    gameover_timer = 2
 end
 
 function update_gameplay(dt)
     if player then
         update_input(dt)
         update_object_movement(player, dt)
+    else
+        gameover_timer = gameover_timer - dt
+        if gameover_timer < 0 then
+            if love.keyboard.isDown('space') and space_down == 0 then
+                space_down = 1
+                gamestate = 'MENU'
+            end
+            if not love.keyboard.isDown('space') then
+                space_down = 0
+            end
+        end
     end
 
     dead_bullets = {}
@@ -148,8 +166,8 @@ function update_input(dt)
     if love.keyboard.isDown('d') then
         player.rot = player.rot + rot_spd * dt
     end
-    if love.keyboard.isDown('space') and shooting == 0 then
-        shooting = 1
+    if love.keyboard.isDown('space') and space_down == 0 then
+        space_down = 1
         table.insert(bullets, 
             {x = player.x, y = player.y,
              vx = player.vx + bul_spd*comp_x,
@@ -158,7 +176,7 @@ function update_input(dt)
             )
     end
     if not love.keyboard.isDown('space') then
-        shooting = 0
+        space_down = 0
     end
 end
 
@@ -183,6 +201,11 @@ end
 function draw_gameplay()
     if player then
         draw_ship(player.x, player.y, player.rot)
+    else
+        love.graphics.printf("GAME OVER", 0, screen_y/2, screen_x, 'center')
+        if gameover_timer < 0 then
+        love.graphics.printf("Press SPACE to return to main menu", 0, screen_y/2+150, screen_x, 'center')
+        end
     end
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
