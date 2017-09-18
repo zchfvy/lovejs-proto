@@ -66,7 +66,7 @@ function update_gameplay(dt)
 
     for _, explo in pairs(exploded_asteroids) do
         ast = asteroids[explo]
-        if ast.size > 15 then
+        if ast and ast.size > 15 then
             for i=1,2 do
                 table.insert(asteroids,
                     {x = ast.x, y = ast.y,
