@@ -19,7 +19,7 @@ function love.load()
     bul_spd = 150
 
     asteroids = {}
-    asteroid_time = 1
+    asteroid_time = 4
     asteroid_timer = 0
 
     love.window.setMode(screen_x, screen_y, {})
@@ -53,6 +53,19 @@ function love.update(dt)
     end
 
     for _, explo in pairs(exploded_asteroids) do
+        ast = asteroids[explo]
+        if ast.size > 15 then
+            for i=1,2 do
+                table.insert(asteroids,
+                    {x = ast.x, y = ast.y,
+                     vx = 25 - 50 * math.random(),
+                     vy = 25 - 50 * math.random(),
+                     seed = math.random(),
+                     rot = math.random() * 6.28,
+                     size = ast.size/2,
+                     rot_vel = (0.5 - math.random()) * 0.02})
+            end
+        end
         table.remove(asteroids, explo)
     end
 
