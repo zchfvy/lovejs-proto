@@ -63,8 +63,10 @@ function init_gameplay()
 end
 
 function update_gameplay(dt)
-    update_input(dt)
-    update_object_movement(player, dt)
+    if player then
+        update_input(dt)
+        update_object_movement(player, dt)
+    end
 
     dead_bullets = {}
     for id, bullet in pairs(bullets) do
@@ -85,6 +87,12 @@ function update_gameplay(dt)
             if dist_2 < math.pow(ast.size, 2) then
                 table.insert(exploded_asteroids, id)
                 table.insert(dead_bullets, bul_id)
+            end
+        end
+        if player then
+            dist_2 = math.pow(player.x - ast.x, 2) + math.pow(player.y - ast.y, 2)
+            if dist_2 < math.pow(ast.size, 2) then
+                player = nil
             end
         end
     end
@@ -109,6 +117,7 @@ function update_gameplay(dt)
     for _, dead in pairs(dead_bullets) do
         table.remove(bullets, dead)
     end
+
 
     asteroid_timer = asteroid_timer - dt
     if asteroid_timer < 0 then
@@ -172,7 +181,9 @@ function update_object_movement(obj, dt)
 end
 
 function draw_gameplay()
-    draw_ship(player.x, player.y, player.rot)
+    if player then
+        draw_ship(player.x, player.y, player.rot)
+    end
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
     end
