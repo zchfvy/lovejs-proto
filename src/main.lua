@@ -5,21 +5,46 @@ function love.load()
 
     love.window.setMode(screen_x, screen_y, {})
 
+    gamestate = 'MENU'
+
     init_gameplay()
 end
 
 function love.update(dt)
-    update_gameplay(dt)
+    if gamestate == 'MENU' then
+        update_menu()
+    end
+    if gamestate == 'GAMEPLAY' then
+        update_gameplay(dt)
+    end
 end
 
 function love.draw()
-    draw_gameplay()
+    if gamestate == 'MENU' then
+        draw_menu()
+    end
+    if gamestate == 'GAMEPLAY' then
+        draw_gameplay()
+    end
+end
+
+function update_menu()
+    if love.keyboard.isDown('space') then
+        init_gameplay()
+        gamestate = 'GAMEPLAY'
+    end
+end
+
+function draw_menu()
+    love.graphics.printf("ASTEROIDS", 0, 100, screen_x, 'center')
+
+    love.graphics.printf("Press SPACE to start", 0, 400, screen_x, 'center')
 end
 
 function init_gameplay()
     player = {
-        x = 100,
-        y = 50,
+        x = screen_x/2,
+        y = screen_y/2,
         vx = 0,
         vy = 0,
         rot = 0
