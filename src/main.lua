@@ -67,6 +67,8 @@ function init_gameplay()
     asteroid_timer = 0
 
     gameover_timer = 2
+
+    score = 0
 end
 
 function update_gameplay(dt)
@@ -125,10 +127,11 @@ function update_gameplay(dt)
                      vy = 25 - 50 * math.random(),
                      seed = math.random(),
                      rot = math.random() * 6.28,
-                     size = ast.size/2,
+                     size = math.floor(ast.size/2),
                      rot_vel = (0.5 - math.random()) * 0.02})
             end
         end
+        score = score + ast.size * 100
         table.remove(asteroids, explo)
     end
 
@@ -147,7 +150,7 @@ function update_gameplay(dt)
              vy = 25 - 50 * math.random(),
              seed = math.random(),
              rot = math.random() * 6.28,
-             size = math.random() * 20 + 20,
+             size = math.floor(math.random() * 20 + 20),
              rot_vel = (0.5 - math.random()) * 0.02})
     end
 end
@@ -200,13 +203,18 @@ end
 
 function draw_gameplay()
     if player then
+        love.graphics.printf(tostring(score), 10, 10, 150, 'left')
         draw_ship(player.x, player.y, player.rot)
     else
-        love.graphics.printf("GAME OVER", 0, screen_y/2, screen_x, 'center')
+        love.graphics.printf("GAME OVER", 0, screen_y/2-50, screen_x, 'center')
+        love.graphics.printf("Final Score: " .. tostring(score), 0, screen_y/2+50, screen_x, 'center')
         if gameover_timer < 0 then
-        love.graphics.printf("Press SPACE to return to main menu", 0, screen_y/2+150, screen_x, 'center')
+            love.graphics.printf("Press SPACE to return to main menu", 0, screen_y/2+150, screen_x, 'center')
         end
     end
+
+
+
     for id, bullet in pairs(bullets) do
         love.graphics.points(bullet.x, bullet.y)
     end
