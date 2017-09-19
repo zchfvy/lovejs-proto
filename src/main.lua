@@ -69,6 +69,8 @@ function init_gameplay()
     gameover_timer = 2
 
     score = 0
+
+    detrius = {}
 end
 
 function update_gameplay(dt)
@@ -112,6 +114,7 @@ function update_gameplay(dt)
         if player then
             dist_2 = math.pow(player.x - ast.x, 2) + math.pow(player.y - ast.y, 2)
             if dist_2 < math.pow(ast.size, 2) then
+                make_detrius(10, player.x, player.y)
                 player = nil
             end
         end
@@ -132,6 +135,7 @@ function update_gameplay(dt)
             end
         end
         if ast then
+            make_detrius(4, ast.x, ast.y)
             score = score + ast.size * 100
         end
         table.remove(asteroids, explo)
@@ -141,6 +145,18 @@ function update_gameplay(dt)
         table.remove(bullets, dead)
     end
 
+    expired = {}
+    for det_id, det in pairs(detrius) do
+        update_object_movement(det, dt)
+        det.time = det.time - dt
+        if det.time < 0 then
+            table.insert(expired, det_id)
+        end
+    end
+
+    for _, exp in pairs(expired) do
+        table.remove(detrius, exp)
+    end
 
     asteroid_timer = asteroid_timer - dt
     if asteroid_timer < 0 then
@@ -223,6 +239,24 @@ function draw_gameplay()
     for id, ast in pairs(asteroids) do
         draw_asteroid(ast.x, ast.y, ast.rot, ast.size, ast.seed)
     end
+    for id, det in pairs(detrius) do
+        draw_detrius(det)
+    end
+end
+
+function make_detrius(count, x, y)
+    for i=1,count do
+        table.insert(detrius,
+            {x = x + 5 * math.random(),
+             y = y + 5 * math.random(),
+             vx = 25 - 50 * math.random(),
+             vy = 25 - 50 * math.random(),
+             len = math.random() * 5 + 5,
+             rot = math.random() * 6.28,
+             size = math.floor(math.random() * 20 + 20),
+             time = 1,
+             rot_vel = (0.5 - math.random()) * 0.02})
+    end
 end
 
 function draw_ship(x, y, r)
@@ -260,6 +294,16 @@ function draw_asteroid(x, y, r, size, seed)
         -0.87 * points[6],  0.5 * points[6],
          0.00            ,  1.0 * points[1]
         )
+
+    love.graphics.pop()
+end
+
+function draw_detrius(det)
+    love.graphics.push()
+    love.graphics.translate(det.x,det.y)
+    love.graphics.rotate(det.rot)
+
+    love.graphics.line(-det.len/2, 0, det.len/2, 0)
 
     love.graphics.pop()
 end
