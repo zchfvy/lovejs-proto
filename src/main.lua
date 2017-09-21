@@ -10,6 +10,10 @@ function love.load()
     space_down = 0
 
     init_gameplay()
+
+    sfx_shoot = love.audio.newSource('shoot.wav', 'static')
+    sfx_explo_ast = love.audio.newSource('explo1.wav', 'static')
+    sfx_explo_ship = love.audio.newSource('explo2.wav', 'static')
 end
 
 function love.update(dt)
@@ -114,6 +118,7 @@ function update_gameplay(dt)
         if player then
             dist_2 = math.pow(player.x - ast.x, 2) + math.pow(player.y - ast.y, 2)
             if dist_2 < math.pow(ast.size, 2) then
+                love.audio.play(sfx_explo_ship)
                 make_detrius(10, player.x, player.y)
                 player = nil
             end
@@ -121,6 +126,7 @@ function update_gameplay(dt)
     end
 
     for _, explo in pairs(exploded_asteroids) do
+        love.audio.play(sfx_explo_ast)
         ast = asteroids[explo]
         if ast and ast.size > 15 then
             for i=1,2 do
@@ -189,6 +195,7 @@ function update_input(dt)
     end
     if love.keyboard.isDown('space') and space_down == 0 then
         space_down = 1
+        love.audio.play(sfx_shoot)
         table.insert(bullets, 
             {x = player.x, y = player.y,
              vx = player.vx + bul_spd*comp_x,
